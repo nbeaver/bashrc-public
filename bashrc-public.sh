@@ -12,11 +12,20 @@ alias ping-packet-loss='ping -i 1 -f 8.8.8.8'
 
 # Load the bug page for a given package.
 function bugpage {
-    # TODO: grep uname for:
-    #       -- Ubuntu https://bugs.launchpad.net/ubuntu/+source/$@/+bugs
-    #       -- Arch https://bugs.archlinux.org/?project=1&cat%5B%5D=31&string=gcc
-    # TODO: if it starts with #, open https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=$@ instead.
-    xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=$@;dist=unstable" 2> /dev/null
+    # TODO: grep uname for for linux distribution?
+    if (( $@ > 0 )); then
+	# The argument is a positive integer, so it must be a bug number.
+        xdg-open "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=$@"
+	xdg-open "https://bugs.launchpad.net/bugs/$@"
+	xdg-open "https://bugzilla.redhat.com/show_bug.cgi?id=$@"
+	xdg-open "https://bugs.archlinux.org/task/$@"
+    else
+	# If it's not a positive integer, maybe it's a package name.
+        xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=$@;dist=unstable"
+        xdg-open "https://bugs.launchpad.net/ubuntu/+source/$@/+bugs"
+	xdg-open "https://bugzilla.redhat.com/buglist.cgi?component=$@"
+	xdg-open "https://bugs.archlinux.org/index.php?string=$@&project=0"
+    fi
 }
 
 # Find the difference between two dates in days.
