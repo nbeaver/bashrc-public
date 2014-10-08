@@ -12,4 +12,4 @@ download the git repository wherevery you like::
 
 then source it in your ``.bashrc``::
 
-    source /path/to/bashrc-public.sh
+    echo "source $PWD/bashrc-public.sh" >> ~/.bashrc
