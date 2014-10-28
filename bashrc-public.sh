@@ -2,7 +2,7 @@
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free#comment34895569_10586020
 function free-mem-percent {
-    free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f\n%"), $3/$2*100}'
+    free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%\n"), $3/$2*100}'
 }
 
 # Show if you're losing packets.
@@ -54,7 +54,7 @@ function date-india() {
   local temp=$TZ
   export TZ=Asia/Kolkata
   echo -n "$TZ : "
-  date +'%A, %B%e, %Y at %r'
+  date +'%A, %B %e, %Y at %r'
   export TZ=$temp
 }
 
