@@ -42,6 +42,14 @@ function bugpage {
     fi
 }
 
+# Open Debian package page tracking page.
+function qa {
+	for var in $@; do
+		#xdg-open "https://packages.qa.debian.org/$var"
+		xdg-open "https://tracker.debian.org/pkg/$var"
+	done
+}
+
 # Find the difference between two dates in days.
 # http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
 # http://stackoverflow.com/a/4679150
