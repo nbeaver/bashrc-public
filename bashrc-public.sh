@@ -94,7 +94,9 @@ function follow() {
 	if [ "$command_type" == 'file' ]
 	then
 		local target="$(type -p "$*")"
-		cd -- "$(dirname "$(readlink --canonicalize-existing "$target")")"
+		local resolved="$(readlink --canonicalize-existing "$target")"
+		printf -- "$resolved\n"
+		cd -- "$(dirname "$resolved")"
 	elif [ "$command_type" == '' ]
 	then
 		echo "Error: command not found: $*"
