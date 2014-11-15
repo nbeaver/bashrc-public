@@ -87,6 +87,7 @@ function gdb-log() {
 }
 
 # Follow a command to the directory it comes from.
+# Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable is in.
 function follow() {
 	set -e
 	local command_type="$(type -t "$*")"
