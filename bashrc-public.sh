@@ -70,7 +70,8 @@ function date-india() {
 # This will copy any given files to a folder on a remote machine.
 # http://www.omnis-dev.com/cgi-bin/nextkey.omns?Key=20080118142922
 function to-remote-machine {
-	rsync --verbose --progress --archive --compress --update "$@" user@remote-machine:~/remote-folder/
+	local resolved="$(readlink --canonicalize-existing "$@")"
+	rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
 }
 
 # Edit your bash configuration and then reload it right afterward.
