@@ -113,3 +113,24 @@ function follow() {
 if [ $SHLVL -gt 1 ]; then
 	PS1="$PS1""SHLVL=$SHLVL \$ "
 fi
+
+# http://redclay.altervista.org/wiki/doku.php?id=projects:old-projects
+function apt-history(){
+      case "$1" in
+        install)
+              cat /var/log/dpkg.log | grep 'install '
+              ;;
+        upgrade|remove)
+              cat /var/log/dpkg.log | grep $1
+              ;;
+        rollback)
+              cat /var/log/dpkg.log | grep upgrade | \
+                  grep "$2" -A10000000 | \
+                  grep "$3" -B10000000 | \
+                  awk '{print $4"="$5}'
+              ;;
+        *)
+              cat /var/log/dpkg.log
+              ;;
+      esac
+}
