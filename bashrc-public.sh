@@ -59,11 +59,11 @@ function date-subtract {
 
 # Find out the time and date without changing the locale.
 function date-india() {
-	local temp=$TZ
+	local temp="$TZ"
 	export TZ=Asia/Kolkata
 	echo -n "$TZ : "
 	date +'%A, %B %e, %Y at %r'
-	export TZ=$temp
+	export TZ="$temp"
 }
 
 # Not a real function, but similar to one I use.
@@ -118,19 +118,19 @@ fi
 function apt-history(){
       case "$1" in
         install)
-              cat /var/log/dpkg.log | grep 'install '
+              tac /var/log/dpkg.log | grep 'install ' | less
               ;;
         upgrade|remove)
-              cat /var/log/dpkg.log | grep $1
+              tac /var/log/dpkg.log | grep $1 | less
               ;;
         rollback)
-              cat /var/log/dpkg.log | grep upgrade | \
+              tac /var/log/dpkg.log | grep upgrade | \
                   grep "$2" -A10000000 | \
                   grep "$3" -B10000000 | \
-                  awk '{print $4"="$5}'
+                  awk '{print $4"="$5}' | less
               ;;
         *)
-              cat /var/log/dpkg.log
+              tac /var/log/dpkg.log | less
               ;;
       esac
 }
