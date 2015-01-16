@@ -106,7 +106,6 @@ function gdb-log() {
 # Follow a command to the directory it comes from.
 # Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable is in.
 function follow() {
-	set -e
 	local command_type="$(type -t "$*")"
 	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
 	if [ "$command_type" == 'file' ]
@@ -118,10 +117,11 @@ function follow() {
 	elif [ "$command_type" == '' ]
 	then
 		echo "Error: command not found: $*"
+		return 1
 	else
 		echo "Error: cannot follow '$*' since it is a $command_type"
+		return 2
 	fi
-	set +e
 }
 
 # Add $SHLVL to the prompt if it's greater than 1.
