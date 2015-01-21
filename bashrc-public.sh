@@ -57,6 +57,7 @@ function bugpage {
 		fi
 	fi
 }
+complete -F _pkg_names bugpage
 
 # Open Debian package page tracking page.
 function qa {
@@ -65,6 +66,9 @@ function qa {
 		xdg-open "https://tracker.debian.org/pkg/$var"
 	done
 }
+# Autocomplete debian package names.
+# Requires debian-goodies package.
+complete -F _pkg_names qa
 
 # Find the difference between two dates in days.
 # http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
@@ -103,9 +107,11 @@ function gdb-log() {
 	gdb -ex "set logging file $(date +%T)-gdb.txt" -ex 'handle SIGPIPE nostop noprint nopass' -ex 'set logging on' -ex 'run' --args "$@" ;
 }
 
-# Follow a command to the directory it comes from.
-# Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable is in.
+# Follow a command to the directory it comes from,
+# or follows a symbolic link to the location of the file.
+# Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable or file is in.
 function follow() {
+	# TODO: make this work for files also.
 	local command_type="$(type -t "$*")"
 	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
 	if [ "$command_type" == 'file' ]
@@ -123,6 +129,8 @@ function follow() {
 		return 2
 	fi
 }
+# Use the same autocomplete settings as `which (1)`
+complete -c which follow
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
