@@ -27,7 +27,7 @@ function bugpage {
 		echo "Your Linux distribution is $DISTRO"
 		return 1
 	fi
-	local DISTRO=$(lsb_release --short --id)
+	local DISTRO="$(lsb_release --short --id)"
 	if (( $1 > 0 )); then
 		# The argument is a positive integer, so it must be a bug number.
 		# TODO: use associative arrays instead of conditionals.
@@ -61,7 +61,7 @@ complete -F _pkg_names bugpage
 
 # Open Debian package page tracking page.
 function qa {
-	for var in $@; do
+	for var in "$@"; do
 		#xdg-open "https://packages.qa.debian.org/$var"
 		xdg-open "https://tracker.debian.org/pkg/$var"
 	done
@@ -145,12 +145,12 @@ function apt-history(){
               tac /var/log/dpkg.log | grep 'install ' | less
               ;;
         upgrade|remove)
-              tac /var/log/dpkg.log | grep $1 | less
+              tac /var/log/dpkg.log | grep "$1" | less
               ;;
         rollback)
-              tac /var/log/dpkg.log | grep upgrade | \
-                  grep "$2" -A10000000 | \
-                  grep "$3" -B10000000 | \
+              tac /var/log/dpkg.log | grep upgrade |
+                  grep "$2" -A10000000 |
+                  grep "$3" -B10000000 |
                   awk '{print $4"="$5}' | less
               ;;
         *)
