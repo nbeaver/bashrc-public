@@ -111,26 +111,48 @@ function gdb-log() {
 # or follows a symbolic link to the location of the file.
 # Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable or file is in.
 function follow() {
-	# TODO: make this work for files also.
+	unset CDPATH
 	local command_type="$(type -t "$*")"
 	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
-	if [ "$command_type" == 'file' ]
+	if [ -L "$*" ]
 	then
-		local target="$(type -p "$*")"
-		local resolved="$(readlink --canonicalize-existing "$target")"
-		printf -- "$resolved\n"
-		cd -- "$(dirname "$resolved")"
+		# First check if we should follow a local symbolic link.
+		local symlink_target="$(readlink "$*")"
+		printf -- "$symlink_target\n"
+		local target_directory="$(dirname "$symlink_target")"
+		cd -- "$target_directory"
+	elif [ "$command_type" == 'file' ]
+	then
+		local maybe_symlink="$(type -p "$*")"
+		local target="$(readlink --canonicalize-existing "$maybe_symlink")"
+		printf -- "$target\n"
+		local target_directory="$(dirname "$target")"
+		cd -- "$target_directory"
 	elif [ "$command_type" == '' ]
 	then
 		echo "Error: command not found: $*"
 		return 1
-	else
+	elif [ "$command_type" == 'builtin' -o "$command_type" == 'keyword' ]
+	then
 		echo "Error: cannot follow '$*' since it is a $command_type"
+		echo "Try running this:"
+		echo "$ help $*"
 		return 2
+	elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
+	then
+		echo "Error: cannot follow '$*' since it is a $command_type"
+		echo "Check your .bashrc or .bash_profile"
+		return 2
+	else
+		# Should not run, unless I've forgotten a command type.
+		echo "Error: '$*' has unknown command type $command_type"
+		return 3
 	fi
 }
 # Use the same autocomplete settings as `which (1)`
 complete -c which follow
+# Also autocomplete filenames to follow symbolic links.
+complete -F _filedir_xspec follow
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
