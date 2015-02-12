@@ -109,7 +109,8 @@ function gdb-log() {
 
 # Follow a command to the directory it comes from,
 # or follows a symbolic link to the location of the file.
-# Like `which (1)`, but dereferences all the symlinks and also moves you to the directory the executable or file is in.
+# Like `which (1)`, but dereferences symlinks and moves to the executable's directory.
+# Also works for non-executable symlinks, but for convoluted symlinks /usr/bin/namei is better.
 function follow() {
 	unset CDPATH
 	local command_type="$(type -t "$*")"
