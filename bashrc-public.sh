@@ -15,7 +15,7 @@ function bugpage {
 	# TODO: Make this a separate executable shell script.
 	# TODO: Handle multiple arguments.
 	# TODO: Make this portable to BSDs.
-	local DISTRO=$(lsb_release --short --id)
+	local DISTRO="$(lsb_release --short --id)"
 	if [ $# -gt 1 ]; then
 		echo "Error: received $# arguments instead of 1: $*"
 		return 1
@@ -57,6 +57,8 @@ function bugpage {
 		fi
 	fi
 }
+# Autocomplete Debian package names.
+# Requires debian-goodies package.
 complete -F _pkg_names bugpage
 
 # Open Debian package page tracking page.
@@ -66,8 +68,6 @@ function qa {
 		xdg-open "https://tracker.debian.org/pkg/$var"
 	done
 }
-# Autocomplete debian package names.
-# Requires debian-goodies package.
 complete -F _pkg_names qa
 
 # Find the difference between two dates in days.
@@ -80,9 +80,10 @@ function date-subtract {
 # Find out the time and date without changing the locale.
 function date-india() {
 	local temp="$TZ"
-	export TZ=Asia/Kolkata
+	export TZ="Asia/Kolkata"
 	echo -n "$TZ : "
 	date +'%A, %B %e, %Y at %r'
+        # e.g. Asia/Kolkata : Thursday, January 1, 1970 at 00:00:00 AM
 	export TZ="$temp"
 }
 
@@ -154,6 +155,7 @@ function follow() {
 complete -c which follow
 # Also autocomplete filenames to follow symbolic links.
 complete -F _filedir_xspec follow
+# TODO: fix this autocompletion. May require a new function.
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
