@@ -116,14 +116,7 @@ function follow() {
 	unset CDPATH
 	local command_type="$(type -t "$*")"
 	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
-	if [ -L "$*" ]
-	then
-		# First check if we should follow a local symbolic link.
-		local symlink_target="$(readlink "$*")"
-		printf -- "$symlink_target\n"
-		local target_directory="$(dirname "$symlink_target")"
-		cd -- "$target_directory"
-	elif [ "$command_type" == 'file' ]
+	if [ "$command_type" == 'file' ]
 	then
 		local maybe_symlink="$(type -p "$*")"
 		local target="$(readlink --canonicalize-existing "$maybe_symlink")"
@@ -143,7 +136,7 @@ function follow() {
 	elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
 	then
 		echo "Error: cannot follow '$*' since it is a $command_type"
-		echo "Check your .bashrc or .bash_profile"
+                type "$*"
 		return 2
 	else
 		# Should not run, unless I've forgotten a command type.
@@ -153,8 +146,23 @@ function follow() {
 }
 # Use the same autocomplete settings as `which (1)`
 complete -c which follow
+
+function follow-symlink() {
+	unset CDPATH
+	if [ -L "$*" ]
+	then
+		# First check if we should follow a local symbolic link.
+		local symlink_target="$(readlink "$*")"
+		printf -- "$symlink_target\n"
+		local target_directory="$(dirname "$symlink_target")"
+		cd -- "$target_directory"
+	else
+		printf -- "Error: '$*'is not a symbolic link.\n"
+		return 1
+	fi
+}
 # Also autocomplete filenames to follow symbolic links.
-complete -F _filedir_xspec follow
+complete -F _filedir_xspec follow-symlink
 # TODO: fix this autocompletion. May require a new function.
 
 # Add $SHLVL to the prompt if it's greater than 1.
