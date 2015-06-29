@@ -112,7 +112,7 @@ function gdb-log() {
 # or follows a symbolic link to the location of the file.
 # Like `which (1)`, but dereferences symlinks and moves to the executable's directory.
 # Also works for non-executable symlinks, but for convoluted symlinks /usr/bin/namei is better.
-function follow() {
+function followpath() {
 	unset CDPATH
 	local command_type="$(type -t "$*")"
 	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
@@ -145,14 +145,14 @@ function follow() {
 	fi
 }
 # Use the same autocomplete settings as `which (1)`
-complete -c which follow
+complete -c which followpath
 
-function follow-symlink() {
+function follow() {
 	unset CDPATH
 	if [ -L "$*" ]
 	then
 		# First check if we should follow a local symbolic link.
-		local symlink_target="$(readlink "$*")"
+		local symlink_target="$(readlink --canonicalize-existing "$*")"
 		printf -- "$symlink_target\n"
 		local target_directory="$(dirname "$symlink_target")"
 		cd -- "$target_directory"
@@ -162,8 +162,10 @@ function follow-symlink() {
 	fi
 }
 # Also autocomplete filenames to follow symbolic links.
-complete -F _filedir_xspec follow-symlink
-# TODO: fix this autocompletion. May require a new function.
+_reply() {
+}
+complete -F _filedir_xspec follow
+# TODO: fix this autocompletion to only complete symbolic links. May require a new function.
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
