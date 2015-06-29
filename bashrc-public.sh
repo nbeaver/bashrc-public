@@ -162,10 +162,12 @@ function follow() {
     fi
 }
 # Also autocomplete filenames to follow symbolic links.
-_reply() {
-}
+# _reply() {
+# }
 complete -F _filedir_xspec follow
 # TODO: fix this autocompletion to only complete symbolic links. May require a new function.
+
+
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
