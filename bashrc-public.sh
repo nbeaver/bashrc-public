@@ -167,7 +167,42 @@ function follow() {
 complete -F _filedir_xspec follow
 # TODO: fix this autocompletion to only complete symbolic links. May require a new function.
 
+edit_function() {
+    local line_number function_file
+    if declare -F "$*"
+    then
+        shopt -s extdebug
+        # The output of
+        # declare -F _filedir_xspec
+        # looks like this:
+        # _filedir_xspec 1819 /usr/share/bash-completion/bash_completion
+        # so we want the 2nd and 3rd fields.
+        line_number="$(declare -F $* | cut -d ' ' -f 2)"
+        function_file="$(declare -F $* | cut -d ' ' -f 3-)"
+        shopt -u extdebug
+        # The command
+        # vim +100 /path/to/file
+        # positions the cursor on line 100 of the file.
+        vim +$line_number "$function_file"
+    else
+        printf "Error: \`$*\` is not a function.\n"
+        return 1
+    fi
+}
 
+edit_completion_function() {
+    local function_name
+    if complete -p $*
+    then
+        # The output of
+        # complete -p vim
+        # looks like this:
+        # complete -F _filedir_xspec vim
+        # so we want the 3rd field.
+        function_name="$(complete -p $* | cut -d ' ' -f 3)"
+        edit_function "$function_name"
+    fi
+}
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
