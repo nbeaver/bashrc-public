@@ -2,7 +2,7 @@
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free#comment34895569_10586020
 function free-mem-percent {
-	free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%\n"), $3/$2*100}'
+    free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%\n"), $3/$2*100}'
 }
 
 # Show if you're losing packets.
@@ -12,50 +12,50 @@ alias ping-packet-loss='ping -i 1 -f 8.8.8.8'
 
 # Load the bug page for a given package.
 function bugpage {
-	# TODO: Make this a separate executable shell script.
-	# TODO: Handle multiple arguments.
-	# TODO: Make this portable to BSDs.
-	local DISTRO="$(lsb_release --short --id)"
-	if [ $# -gt 1 ]; then
-		echo "Error: received $# arguments instead of 1: $*"
-		return 1
-	elif [ $# -eq 0 ]; then
-		echo "Usage: enter package name:"
-		echo "    bugpage package-name"
-		echo "or bug number:"
-		echo "    bugpage 1234567"
-		echo "Your Linux distribution is $DISTRO"
-		return 1
-	fi
-	local DISTRO="$(lsb_release --short --id)"
-	if (( $1 > 0 )); then
-		# The argument is a positive integer, so it must be a bug number.
-		# TODO: use associative arrays instead of conditionals.
-		if [ "$DISTRO" = 'Debian' ]; then
-			xdg-open "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=$1"
-		elif [ "$DISTRO" = 'Ubuntu' ]; then
-			xdg-open "https://bugs.launchpad.net/bugs/$1"
-		elif [ "$DISTRO" = 'Fedora' ]; then
-			xdg-open "https://bugzilla.redhat.com/show_bug.cgi?id=$1"
-		elif [ "$DISTRO" = 'Arch' ]; then
-			xdg-open "https://bugs.archlinux.org/task/$1"
-		else
-			echo "Unrecognized distro: $DISTRO"
-		fi
-	else
-		# If it's not a positive integer, maybe it's a package name.
-		if [ "$DISTRO" = 'Debian' ]; then
-			xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=$1"
-		elif [ "$DISTRO" = 'Ubuntu' ]; then
-			xdg-open "https://bugs.launchpad.net/ubuntu/+source/$1/+bugs"
-		elif [ "$DISTRO" = 'Fedora' ]; then
-			xdg-open "https://bugzilla.redhat.com/buglist.cgi?component=$1"
-		elif [ "$DISTRO" = 'Arch' ]; then
-			xdg-open "https://bugs.archlinux.org/index.php?string=$1&project=0"
-		else
-			echo "Unrecognized distro: $DISTRO"
-		fi
-	fi
+    # TODO: Make this a separate executable shell script.
+    # TODO: Handle multiple arguments.
+    # TODO: Make this portable to BSDs.
+    local DISTRO="$(lsb_release --short --id)"
+    if [ $# -gt 1 ]; then
+        echo "Error: received $# arguments instead of 1: $*"
+        return 1
+    elif [ $# -eq 0 ]; then
+        echo "Usage: enter package name:"
+        echo "    bugpage package-name"
+        echo "or bug number:"
+        echo "    bugpage 1234567"
+        echo "Your Linux distribution is $DISTRO"
+        return 1
+    fi
+    local DISTRO="$(lsb_release --short --id)"
+    if (( $1 > 0 )); then
+        # The argument is a positive integer, so it must be a bug number.
+        # TODO: use associative arrays instead of conditionals.
+        if [ "$DISTRO" = 'Debian' ]; then
+            xdg-open "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=$1"
+        elif [ "$DISTRO" = 'Ubuntu' ]; then
+            xdg-open "https://bugs.launchpad.net/bugs/$1"
+        elif [ "$DISTRO" = 'Fedora' ]; then
+            xdg-open "https://bugzilla.redhat.com/show_bug.cgi?id=$1"
+        elif [ "$DISTRO" = 'Arch' ]; then
+            xdg-open "https://bugs.archlinux.org/task/$1"
+        else
+            echo "Unrecognized distro: $DISTRO"
+        fi
+    else
+        # If it's not a positive integer, maybe it's a package name.
+        if [ "$DISTRO" = 'Debian' ]; then
+            xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=$1"
+        elif [ "$DISTRO" = 'Ubuntu' ]; then
+            xdg-open "https://bugs.launchpad.net/ubuntu/+source/$1/+bugs"
+        elif [ "$DISTRO" = 'Fedora' ]; then
+            xdg-open "https://bugzilla.redhat.com/buglist.cgi?component=$1"
+        elif [ "$DISTRO" = 'Arch' ]; then
+            xdg-open "https://bugs.archlinux.org/index.php?string=$1&project=0"
+        else
+            echo "Unrecognized distro: $DISTRO"
+        fi
+    fi
 }
 # Autocomplete Debian package names.
 # Requires debian-goodies package.
@@ -63,10 +63,10 @@ complete -F _pkg_names bugpage
 
 # Open Debian package page tracking page.
 function qa {
-	for var in "$@"; do
-		#xdg-open "https://packages.qa.debian.org/$var"
-		xdg-open "https://tracker.debian.org/pkg/$var"
-	done
+    for var in "$@"; do
+        #xdg-open "https://packages.qa.debian.org/$var"
+        xdg-open "https://tracker.debian.org/pkg/$var"
+    done
 }
 complete -F _pkg_names qa
 
@@ -74,38 +74,38 @@ complete -F _pkg_names qa
 # http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
 # http://stackoverflow.com/a/4679150
 function date-subtract {
-	echo $(( ( $(date -d "$1" +%s) - $(date -d "$2" +%s) ) /(24 * 60 * 60 ) )) ;
+    echo $(( ( $(date -d "$1" +%s) - $(date -d "$2" +%s) ) /(24 * 60 * 60 ) )) ;
 }
 
 # Find out the time and date without changing the locale.
 function date-india() {
-	local temp="$TZ"
-	export TZ="Asia/Kolkata"
-	echo -n "$TZ : "
-	date +'%A, %B %e, %Y at %r'
+    local temp="$TZ"
+    export TZ="Asia/Kolkata"
+    echo -n "$TZ : "
+    date +'%A, %B %e, %Y at %r'
         # e.g. Asia/Kolkata : Thursday, January 1, 1970 at 00:00:00 AM
-	export TZ="$temp"
+    export TZ="$temp"
 }
 
 # Not a real function, but similar to one I use.
 # This will copy any given files to a folder on a remote machine.
 # http://www.omnis-dev.com/cgi-bin/nextkey.omns?Key=20080118142922
 function to-remote-machine {
-	local resolved="$(readlink --canonicalize-existing "$@")"
-	rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
+    local resolved="$(readlink --canonicalize-existing "$@")"
+    rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
 }
 
 # Edit your bash configuration and then reload it right afterward.
 # http://www.reddit.com/r/linux/comments/1xcdtk/the_generally_helpful_bashrc_alias_thread/cfa4p21
 function config() {
-	$EDITOR ~/.bashrc && source ~/.bashrc
+    $EDITOR ~/.bashrc && source ~/.bashrc
 }
 
 # Make gdb run with date-stamped logfiles,
 # and pass arguments properly.
 # https://forum.transmissionbt.com/viewtopic.php?f=1&t=14103#p62594
 function gdb-log() {
-	gdb -ex "set logging file $(date +%T)-gdb.txt" -ex 'handle SIGPIPE nostop noprint nopass' -ex 'set logging on' -ex 'run' --args "$@" ;
+    gdb -ex "set logging file $(date +%T)-gdb.txt" -ex 'handle SIGPIPE nostop noprint nopass' -ex 'set logging on' -ex 'run' --args "$@" ;
 }
 
 # Follow a command to the directory it comes from,
@@ -113,53 +113,53 @@ function gdb-log() {
 # Like `which (1)`, but dereferences symlinks and moves to the executable's directory.
 # Also works for non-executable symlinks, but for convoluted symlinks /usr/bin/namei is better.
 function followpath() {
-	unset CDPATH
-	local command_type="$(type -t "$*")"
-	# one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
-	if [ "$command_type" == 'file' ]
-	then
-		local maybe_symlink="$(type -p "$*")"
-		local target="$(readlink --canonicalize-existing "$maybe_symlink")"
-		printf -- "$target\n"
-		local target_directory="$(dirname "$target")"
-		cd -- "$target_directory"
-	elif [ "$command_type" == '' ]
-	then
-		echo "Error: command not found: $*"
-		return 1
-	elif [ "$command_type" == 'builtin' -o "$command_type" == 'keyword' ]
-	then
-		echo "Error: cannot follow '$*' since it is a $command_type"
-		echo "Try running this:"
-		echo "$ help $*"
-		return 2
-	elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
-	then
-		echo "Error: cannot follow '$*' since it is a $command_type"
+    unset CDPATH
+    local command_type="$(type -t "$*")"
+    # one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
+    if [ "$command_type" == 'file' ]
+    then
+        local maybe_symlink="$(type -p "$*")"
+        local target="$(readlink --canonicalize-existing "$maybe_symlink")"
+        printf -- "$target\n"
+        local target_directory="$(dirname "$target")"
+        cd -- "$target_directory"
+    elif [ "$command_type" == '' ]
+    then
+        echo "Error: command not found: $*"
+        return 1
+    elif [ "$command_type" == 'builtin' -o "$command_type" == 'keyword' ]
+    then
+        echo "Error: cannot follow '$*' since it is a $command_type"
+        echo "Try running this:"
+        echo "$ help $*"
+        return 2
+    elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
+    then
+        echo "Error: cannot follow '$*' since it is a $command_type"
                 type "$*"
-		return 2
-	else
-		# Should not run, unless I've forgotten a command type.
-		echo "Error: '$*' has unknown command type $command_type"
-		return 3
-	fi
+        return 2
+    else
+        # Should not run, unless I've forgotten a command type.
+        echo "Error: '$*' has unknown command type $command_type"
+        return 3
+    fi
 }
 # Use the same autocomplete settings as `which (1)`
 complete -c which followpath
 
 function follow() {
-	unset CDPATH
-	if [ -L "$*" ]
-	then
-		# First check if we should follow a local symbolic link.
-		local symlink_target="$(readlink --canonicalize-existing "$*")"
-		printf -- "$symlink_target\n"
-		local target_directory="$(dirname "$symlink_target")"
-		cd -- "$target_directory"
-	else
-		printf -- "Error: '$*'is not a symbolic link.\n"
-		return 1
-	fi
+    unset CDPATH
+    if [ -L "$*" ]
+    then
+        # First check if we should follow a local symbolic link.
+        local symlink_target="$(readlink --canonicalize-existing "$*")"
+        printf -- "$symlink_target\n"
+        local target_directory="$(dirname "$symlink_target")"
+        cd -- "$target_directory"
+    else
+        printf -- "Error: '$*'is not a symbolic link.\n"
+        return 1
+    fi
 }
 # Also autocomplete filenames to follow symbolic links.
 _reply() {
@@ -170,26 +170,26 @@ complete -F _filedir_xspec follow
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
 if [ $SHLVL -gt 1 ]; then
-	PS1="$PS1""SHLVL=$SHLVL \$ "
+    PS1="$PS1""SHLVL=$SHLVL \$ "
 fi
 
 # http://redclay.altervista.org/wiki/doku.php?id=projects:old-projects
 function apt-history(){
-      case "$1" in
+    case "$1" in
         install)
-              tac /var/log/dpkg.log | grep 'install ' | less
-              ;;
+            tac /var/log/dpkg.log | grep 'install ' | less
+            ;;
         upgrade|remove)
-              tac /var/log/dpkg.log | grep "$1" | less
-              ;;
+            tac /var/log/dpkg.log | grep "$1" | less
+            ;;
         rollback)
-              tac /var/log/dpkg.log | grep upgrade |
-                  grep "$2" -A10000000 |
-                  grep "$3" -B10000000 |
-                  awk '{print $4"="$5}' | less
-              ;;
+            tac /var/log/dpkg.log | grep upgrade |
+            grep "$2" -A10000000 |
+            grep "$3" -B10000000 |
+            awk '{print $4"="$5}' | less
+            ;;
         *)
-              tac /var/log/dpkg.log | less
-              ;;
-      esac
+            tac /var/log/dpkg.log | less
+            ;;
+    esac
 }
