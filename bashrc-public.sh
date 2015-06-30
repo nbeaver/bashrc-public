@@ -161,11 +161,30 @@ function follow() {
         return 1
     fi
 }
-# Also autocomplete filenames to follow symbolic links.
-# _reply() {
-# }
-complete -F _filedir_xspec follow
-# TODO: fix this autocompletion to only complete symbolic links. May require a new function.
+
+_follow() {
+    if test "$1" != "$3"
+    then
+        # This means the previous word is not the same as the command being executed,
+        # i.e. trying to pass multiple arguments to this command, which takes only one.
+        return 1
+    fi
+    _init_completion || return
+    local candidate candidates
+    candidates="$(compgen -f $2)"
+
+    for candidate in "$candidates"
+    do
+        if test -L "$candidate"
+        then
+            COMPREPLY+=("$candidate")
+        else
+            #TODO: prevent from autocompleting ordinary files.
+            _filedir
+        fi
+    done
+}
+complete -F _follow follow
 
 edit_function() {
     local line_number function_file
