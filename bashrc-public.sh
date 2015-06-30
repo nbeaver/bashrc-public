@@ -171,16 +171,23 @@ _follow() {
     fi
     _init_completion || return
     local candidate candidates
+    #TODO: autocomplete ~, $HOME, etc.
     candidates="$(compgen -f $2)"
 
+    # TODO: test paths with spaces in them.
     for candidate in "$candidates"
     do
         if test -L "$candidate"
         then
             COMPREPLY+=("$candidate")
-        else
-            #TODO: prevent from autocompleting ordinary files.
+        elif test -d "$candidate"
+        then
+            # TODO: autocomplete only the children that are symlinks.
             _filedir
+        else
+            # This is not a symlink or directory,
+            # so we do nothing.
+            :
         fi
     done
 }
