@@ -180,6 +180,8 @@ edit_function() {
         line_number="$(declare -F $* | cut -d ' ' -f 2)"
         function_file="$(declare -F $* | cut -d ' ' -f 3-)"
         shopt -u extdebug
+        unset CDPATH
+        cd -- "$(dirname "$function_file")"
         # The command
         # vim +100 /path/to/file
         # positions the cursor on line 100 of the file.
