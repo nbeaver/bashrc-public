@@ -144,8 +144,8 @@ function followpath() {
         return 3
     fi
 }
-# Use the same autocomplete settings as `which (1)`
-complete -c which followpath
+# Use the same autocomplete settings as `which (1)`.
+complete -c followpath
 
 function follow() {
     unset CDPATH
