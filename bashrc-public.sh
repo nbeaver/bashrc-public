@@ -218,16 +218,32 @@ edit_function() {
     fi
 }
 
+get_completion_function_name() {
+    # The output of
+    #     complete -p vim
+    # looks like this:
+    #     complete -F _filedir_xspec vim
+    # or this:
+    #     complete -o default -F _dict dict
+    # so we want the argument after -F.
+    # First, we shift to get rid of the leading 'complete' argument.
+    shift
+    # Next, we parse all the possible arguments to 'complete'.
+    # Usually, it's only -o or -F, but it doesn't hurt to be cautious.
+    while getopts 'aA:bcC:dDeEfF:G:gjko:pP:rsS:uvW:X:' flag
+    do
+        if test "$flag" = 'F'
+        then
+            printf -- "$OPTARG\n"
+        fi
+    done
+}
+
 edit_completion_function() {
     local function_name
-    if complete -p $*
+    if complete -p "$*"
     then
-        # The output of
-        # complete -p vim
-        # looks like this:
-        # complete -F _filedir_xspec vim
-        # so we want the 3rd field.
-        function_name="$(complete -p $* | cut -d ' ' -f 3)"
+        function_name="$(get_completion_function_name $(complete -p $*))"
         edit_function "$function_name"
     fi
 }
