@@ -208,10 +208,10 @@ edit_function() {
         shopt -u extdebug
         unset CDPATH
         cd -- "$(dirname "$function_file")"
-        # The command
-        # vim +100 /path/to/file
+        editor +$line_number "$function_file"
+        # The command `editor +100 /path/to/file`
         # positions the cursor on line 100 of the file.
-        vim +$line_number "$function_file"
+        # This works for emacs, vim, nano, joe, jed, and probably others too.
     else
         printf "Error: \`$*\` is not a function.\n"
         return 1
