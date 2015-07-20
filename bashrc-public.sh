@@ -274,3 +274,36 @@ function apt-history(){
             ;;
     esac
 }
+
+# Takes you to the first path matching the argument,
+# using the locate(1) command.
+lucky() {
+    local path
+    local paths
+    local counter=0
+    OLD_IFS="$IFS"
+    IFS=$'\n'
+    for path in $(locate "$*")
+    do
+        ((counter++))
+        if [ -d "$path" ]; then
+            pushd "$path"
+            return 0
+        elif [ -f "$path" ]; then
+            local parent="$(dirname "$path")"
+            pushd "$parent"
+            return 0
+        else
+            echo "Warning: database may be stale, this is not a file or directory: \`$path\`" 1>&2
+        fi
+    done
+    IFS="$OLD_IFS"
+    if [ $counter -eq 0 ]; then
+        echo "No matches for \`$*\`" 1>&2
+    else
+        echo "All matches failed for \`$*\`" 1>&2
+        echo "Date of last locate(1) database update: $(stat -c %y /var/lib/mlocate/mlocate.db)" 1>&2
+    fi
+    return 1
+}
+
