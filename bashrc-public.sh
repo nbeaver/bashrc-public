@@ -136,7 +136,8 @@ function followpath() {
     elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
     then
         echo "Error: cannot follow '$*' since it is a $command_type"
-                type "$*"
+        echo "Try running this:"
+        echo "$ type $*"
         return 2
     else
         # Should not run, unless I've forgotten a command type.
