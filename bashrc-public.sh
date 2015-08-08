@@ -148,11 +148,12 @@ function followpath() {
 # Use the same autocomplete settings as `which (1)`.
 complete -c followpath
 
+# Move the the parent directory of a symlink.
 function follow() {
     unset CDPATH
     if [ -L "$*" ]
     then
-        # First check if we should follow a local symbolic link.
+        # Check if the input is a symbolic link.
         local symlink_target="$(readlink --canonicalize-existing "$*")"
         printf -- "$symlink_target\n"
         local target_directory="$(dirname "$symlink_target")"
@@ -163,6 +164,7 @@ function follow() {
     fi
 }
 
+# Only autocomplete symlinks or paths to symlinks.
 _follow() {
     if test "$1" != "$3"
     then
@@ -176,6 +178,7 @@ _follow() {
     candidates="$(compgen -f $2)"
 
     # TODO: test paths with spaces in them.
+    # TODO: complete partial matches.
     for candidate in "$candidates"
     do
         if test -L "$candidate"
@@ -241,13 +244,17 @@ get_completion_function_name() {
 }
 
 edit_completion_function() {
+
     local function_name
     if complete -p "$*"
     then
         function_name="$(get_completion_function_name $(complete -p $*))"
         edit_function "$function_name"
     fi
+    # TODO: edit the dynamically loaded completions
+    # in /usr/share/bash-completion/completions/
 }
+complete -c edit_completion_function
 
 # Add $SHLVL to the prompt if it's greater than 1.
 # This way, exiting a shell is less surprising.
