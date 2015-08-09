@@ -45,7 +45,7 @@ function bugpage {
     else
         # If it's not a positive integer, maybe it's a package name.
         if [ "$DISTRO" = 'Debian' ]; then
-            xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?pkg=$1"
+            xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=both;pkg=$1"
         elif [ "$DISTRO" = 'Ubuntu' ]; then
             xdg-open "https://bugs.launchpad.net/ubuntu/+source/$1/+bugs"
         elif [ "$DISTRO" = 'Fedora' ]; then
