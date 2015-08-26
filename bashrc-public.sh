@@ -122,7 +122,7 @@ function followpath() {
         local target="$(readlink --canonicalize-existing "$maybe_symlink")"
         printf -- "$target\n"
         local target_directory="$(dirname "$target")"
-        cd -- "$target_directory"
+        pushd -- "$target_directory"
     elif [ "$command_type" == '' ]
     then
         echo "Error: command not found: $*"
