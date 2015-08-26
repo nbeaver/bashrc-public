@@ -165,6 +165,7 @@ function follow() {
 }
 
 # Only autocomplete symlinks or paths to symlinks.
+# TODO: escape spaces and other characters in the filename.
 _follow() {
     if test "$1" != "$3"
     then
