@@ -291,16 +291,41 @@ lucky() {
     IFS=$'\n'
     local counter=0
 
+    in_array() {
+        local item="$1"
+        local array="$2[@]"
+        for i in "${!array}"
+        do
+            if [ "$item" == "$i" ]
+            then
+                return 0
+            fi
+        done
+        return 1
+    }
+
     lucky_helper() {
         local path
         for path in $(locate --basename "$*")
         do
             ((counter++))
             if [ -d "$path" ]; then
+                if in_array "$path" DIRSTACK
+                then
+                    # If we're already in this directory,
+                    # try a different option.
+                    continue
+                fi
                 pushd "$path"
                 return 0
             elif [ -f "$path" ]; then
                 local parent="$(dirname "$path")"
+                if in_array "$parent" DIRSTACK
+                then
+                    # If we're already in this file's parent,
+                    # try a different option.
+                    continue
+                fi
                 pushd "$parent"
                 return 0
             else
