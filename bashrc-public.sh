@@ -284,29 +284,41 @@ function apt-history(){
     esac
 }
 
-# Takes you to the first path matching the argument,
-# using the locate(1) command.
+# Takes you to the first matching path using the locate(1) command.
+# Useful if you know a globally unique filename or directory name.
+
 lucky() {
-    local path
-    local paths
-    local counter=0
-    OLD_IFS="$IFS"
     IFS=$'\n'
-    for path in $(locate "$*")
-    do
-        ((counter++))
-        if [ -d "$path" ]; then
-            pushd "$path"
-            return 0
-        elif [ -f "$path" ]; then
-            local parent="$(dirname "$path")"
-            pushd "$parent"
-            return 0
-        else
-            echo "Warning: database may be stale, this is not a file or directory: \`$path\`" 1>&2
-        fi
-    done
-    IFS="$OLD_IFS"
+    local counter=0
+
+    lucky_helper() {
+        local path
+        for path in $(locate --basename "$*")
+        do
+            ((counter++))
+            if [ -d "$path" ]; then
+                pushd "$path"
+                return 0
+            elif [ -f "$path" ]; then
+                local parent="$(dirname "$path")"
+                pushd "$parent"
+                return 0
+            else
+                echo "Warning: database may be stale, this is not a file or directory: \`$path\`" 1>&2
+            fi
+        done
+        return 1
+    }
+
+    # Try for exact match first.
+    if lucky_helper "\\$*"
+    then
+        return 0
+    # Next try for matches to *NAME*, not just NAME (see mlocate manpage).
+    elif lucky_helper "$*"
+    then
+        return 0
+    fi
     if [ $counter -eq 0 ]; then
         echo "No matches for \`$*\`" 1>&2
     else
@@ -315,4 +327,3 @@ lucky() {
     fi
     return 1
 }
-
