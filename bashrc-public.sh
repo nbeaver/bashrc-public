@@ -312,20 +312,20 @@ lucky() {
         # We have to use dirs -l
         # instead of DIRSTACK
         # due to lack of tilde expansion.
-        dirs -l -p | while read dir
+        local dir
+        while read dir
         do
             local realdir="$(realpath -e -- "$dir")"
             if [ "$resolved" = "$realdir" ]
             then
                 return 0
             fi
-        done
-        # Not in the dirstack.
+        done < <(dirs -l -p)
         return 1
     }
 
     try_pushd() {
-        dir="$*"
+        local dir="$*"
         if ! test -d "$dir"
         then
             # It's not a directory,
@@ -338,13 +338,13 @@ lucky() {
             # try a different option.
             return 1
         else
-            pushd "$dir"
+            pushd "$dir" > /dev/null
             return 0
         fi
     }
 
-    lucky_helper() {
-        while read -r path
+    locate_iter() {
+        while read path
         do
             counter=$((counter+1))
             if [ -d "$path" ]; then
@@ -371,11 +371,11 @@ lucky() {
     }
 
     # Try for exact match first.
-    if lucky_helper "\\$*"
+    if locate_iter "\\$*"
     then
         return 0
     # Next try for matches to *NAME*, not just NAME (see mlocate manpage).
-    elif lucky_helper "$*"
+    elif locate_iter "$*"
     then
         return 0
     fi
