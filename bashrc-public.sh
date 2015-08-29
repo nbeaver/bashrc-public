@@ -296,7 +296,7 @@ lucky() {
     }
 
     in_dirstack() {
-        local path="$1"
+        local path="$*"
         if test -z "$path"; then
             err 'empty string.'
             return 1
