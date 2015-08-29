@@ -344,12 +344,17 @@ lucky() {
     }
 
     locate_iter() {
+        # This is somewhat inefficient,
+        # since it has to run a full 'locate' search,
+        # and usually does not need all the results,
+        # but there does not seem to be an easy way around this.
         while read path
         do
             counter=$((counter+1))
             if [ -d "$path" ]; then
                 if try_pushd "$path"
                 then
+                    printf "match: ‘$(basename "$path")’\n"
                     return 0
                 else
                     continue
@@ -359,6 +364,7 @@ lucky() {
                 local parent="$(dirname "$path")"
                 if try_pushd "$parent"
                 then
+                    printf "match: ‘$(basename "$path")’\n"
                     return 0
                 else
                     continue
