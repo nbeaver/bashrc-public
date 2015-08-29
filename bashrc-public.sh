@@ -285,18 +285,17 @@ function apt-history(){
 }
 
 # Takes you to the first matching path using the locate(1) command.
-# Useful if you know a globally unique filename or directory name.
+# Most useful if you know a globally unique filename or directory name.
 
 lucky() {
     IFS=$'\n'
     local counter=0
 
-    in_array() {
-        local item="$1"
-        local array="$2[@]"
-        for i in "${!array}"
+    in_dirstack() {
+        local path="$1"
+        for i in "${DIRSTACK[@]}"
         do
-            if [ "$item" == "$i" ]
+            if [ "$path" == "$(realpath $i)" ]
             then
                 return 0
             fi
@@ -310,7 +309,7 @@ lucky() {
         do
             ((counter++))
             if [ -d "$path" ]; then
-                if in_array "$path" DIRSTACK
+                if in_dirstack "$path"
                 then
                     # If we're already in this directory,
                     # try a different option.
@@ -320,7 +319,7 @@ lucky() {
                 return 0
             elif [ -f "$path" ]; then
                 local parent="$(dirname "$path")"
-                if in_array "$parent" DIRSTACK
+                if in_dirstack "$parent"
                 then
                     # If we're already in this file's parent,
                     # try a different option.
