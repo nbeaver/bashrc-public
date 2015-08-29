@@ -288,49 +288,85 @@ function apt-history(){
 # Most useful if you know a globally unique filename or directory name.
 
 lucky() {
-    IFS=$'\n'
-    local counter=0
+    local counter
+    counter=0
+
+    err() {
+        echo "Error: $*" >&2
+    }
 
     in_dirstack() {
         local path="$1"
-        for i in "${DIRSTACK[@]}"
+        if test -z "$path"; then
+            err 'empty string.'
+            return 1
+        elif ! test -e "$path";  then
+            err "path does not exist: $path"
+            return 1
+        elif ! test -d "$path"; then
+            err "path is not a directory: $path"
+            return 1
+        fi
+        local resolved="$(realpath -e -- "$path")"
+        # Run through DIRSTACK looking for matched.
+        # We have to use dirs -l
+        # instead of DIRSTACK
+        # due to lack of tilde expansion.
+        dirs -l -p | while read dir
         do
-            if [ "$path" == "$(realpath $i)" ]
+            local realdir="$(realpath -e -- "$dir")"
+            if [ "$resolved" = "$realdir" ]
             then
                 return 0
             fi
         done
+        # Not in the dirstack.
         return 1
     }
 
+    try_pushd() {
+        dir="$*"
+        if ! test -d "$dir"
+        then
+            # It's not a directory,
+            # so we can't do it.
+            err "not a directory: \`$dir\`"
+            return 1
+        elif in_dirstack "$dir"
+        then
+            # If we're already in this directory,
+            # try a different option.
+            return 1
+        else
+            pushd "$dir"
+            return 0
+        fi
+    }
+
     lucky_helper() {
-        local path
-        for path in $(locate --basename "$*")
+        while read -r path
         do
-            ((counter++))
+            counter=$((counter+1))
             if [ -d "$path" ]; then
-                if in_dirstack "$path"
+                if try_pushd "$path"
                 then
-                    # If we're already in this directory,
-                    # try a different option.
+                    return 0
+                else
                     continue
                 fi
-                pushd "$path"
-                return 0
+
             elif [ -f "$path" ]; then
                 local parent="$(dirname "$path")"
-                if in_dirstack "$parent"
+                if try_pushd "$parent"
                 then
-                    # If we're already in this file's parent,
-                    # try a different option.
+                    return 0
+                else
                     continue
                 fi
-                pushd "$parent"
-                return 0
             else
-                echo "Warning: database may be stale, this is not a file or directory: \`$path\`" 1>&2
+                err "database may be stale, this is not a file or directory: \`$path\`"
             fi
-        done
+        done < <(locate --basename "$*")
         return 1
     }
 
@@ -344,9 +380,9 @@ lucky() {
         return 0
     fi
     if [ $counter -eq 0 ]; then
-        echo "No matches for \`$*\`" 1>&2
+        err "No matches for \`$*\`"
     else
-        echo "All matches failed for \`$*\`" 1>&2
+        err "All matches failed for \`$*\`"
         echo "Date of last locate(1) database update: $(stat -c %y /var/lib/mlocate/mlocate.db)" 1>&2
     fi
     return 1
