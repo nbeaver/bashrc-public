@@ -288,11 +288,29 @@ function apt-history(){
 # Most useful if you know a globally unique filename or directory name.
 
 lucky() {
-    local counter
-    counter=0
+    local matches
+    matches=0
+    local duplicates
+    declare -a duplicates
 
     err() {
         echo "Error: $*" >&2
+    }
+    warn() {
+        echo "Warning: $*" >&2
+    }
+
+    in_array() {
+        local item="$1"
+        local array="$2[@]"
+        for i in "${!array}"
+        do
+            if [ "$item" == "$i" ]
+            then
+                return 0
+            fi
+        done
+        return 1
     }
 
     in_dirstack() {
@@ -308,20 +326,27 @@ lucky() {
             return 1
         fi
         local resolved="$(realpath -e -- "$path")"
-        # Run through DIRSTACK looking for matched.
         # We have to use dirs -l
         # instead of DIRSTACK
         # due to lack of tilde expansion.
+        local realdirs
+        declare -a realdirs=()
         local dir
         while read dir
         do
             local realdir="$(realpath -e -- "$dir")"
-            if [ "$resolved" = "$realdir" ]
-            then
-                return 0
-            fi
+            realdirs+=("$realdir")
         done < <(dirs -l -p)
-        return 1
+        if in_array "$resolved" realdirs
+        then
+            if ! in_array "$resolved" duplicates
+            then
+                duplicates+=("$resolved")
+            fi
+            return 0
+        else
+            return 1
+        fi
     }
 
     try_pushd() {
@@ -330,11 +355,12 @@ lucky() {
         then
             # It's not a directory,
             # so we can't do it.
-            err "not a directory: \`$dir\`"
+            err "not a directory: ‘$dir‘"
             return 1
         elif in_dirstack "$dir"
         then
             # If we're already in this directory,
+            # or it's already in the DIRSTACK,
             # try a different option.
             return 1
         else
@@ -350,7 +376,7 @@ lucky() {
         # but there does not seem to be an easy way around this.
         while read path
         do
-            counter=$((counter+1))
+            matches=$((matches+1))
             if [ -d "$path" ]; then
                 if try_pushd "$path"
                 then
@@ -370,7 +396,7 @@ lucky() {
                     continue
                 fi
             else
-                err "database may be stale, this is not a file or directory: \`$path\`"
+                warn "database may be stale; this is not a file or directory: ‘$path’"
             fi
         done < <(locate --basename "$*")
         return 1
@@ -385,11 +411,12 @@ lucky() {
     then
         return 0
     fi
-    if [ $counter -eq 0 ]; then
-        err "No matches for \`$*\`"
+    if [ $matches -eq 0 ]; then
+        err "No matches for ‘$*’"
     else
-        err "All matches failed for \`$*\`"
-        echo "Date of last locate(1) database update: $(stat -c %y /var/lib/mlocate/mlocate.db)" 1>&2
+        err "No further matches for ‘$*’"
+        echo "Number of duplicates already in DIRSTACK: ${#duplicates[@]}"
+        echo "Date of last locate(1) database modification: $(stat -c %y /var/lib/mlocate/mlocate.db)" 1>&2
     fi
     return 1
 }
