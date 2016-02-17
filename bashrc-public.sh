@@ -164,40 +164,6 @@ function follow() {
     fi
 }
 
-# Only autocomplete symlinks or paths to symlinks.
-# TODO: escape spaces and other characters in the filename.
-_follow() {
-    if test "$1" != "$3"
-    then
-        # This means the previous word is not the same as the command being executed,
-        # i.e. trying to pass multiple arguments to this command, which takes only one.
-        return 1
-    fi
-    _init_completion || return
-    local candidate candidates
-    #TODO: autocomplete ~, $HOME, etc.
-    candidates="$(compgen -f $2)"
-
-    # TODO: test paths with spaces in them.
-    # TODO: complete partial matches.
-    for candidate in "$candidates"
-    do
-        if test -L "$candidate"
-        then
-            COMPREPLY+=("$candidate")
-        elif test -d "$candidate"
-        then
-            # TODO: autocomplete only the children that are symlinks.
-            _filedir
-        else
-            # This is not a symlink or directory,
-            # so we do nothing.
-            :
-        fi
-    done
-}
-complete -F _follow follow
-
 edit_function() {
     local line_number function_file
     if declare -F "$*"
