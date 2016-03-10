@@ -112,6 +112,7 @@ function gdb-log() {
 # or follows a symbolic link to the location of the file.
 # Like `which (1)`, but dereferences symlinks and moves to the executable's directory.
 # Also works for non-executable symlinks, but for convoluted symlinks /usr/bin/namei is better.
+# Has to be a shell function, otherwise it could not use pushd and popd.
 function followpath() {
     unset CDPATH
     local command_type="$(type -t "$*")"
@@ -149,6 +150,7 @@ function followpath() {
 complete -c followpath
 
 # Move the the parent directory of a symlink.
+# Has to be a shell function, otherwise it could not use cd.
 function follow() {
     unset CDPATH
     if [ -L "$*" ]
@@ -252,6 +254,7 @@ function apt-history(){
 
 # Takes you to the first matching path using the locate(1) command.
 # Most useful if you know a globally unique filename or directory name.
+# Has to be a shell function, otherwise it could not use pushd and popd.
 
 lucky() {
     local matches
