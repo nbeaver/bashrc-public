@@ -102,7 +102,7 @@ complete -c followpath
 # Has to be a shell function, otherwise it could not use cd.
 function follow() {
     unset CDPATH
-    if [ -L "$*" ]
+    if test -L "$*"
     then
         # Check if the input is a symbolic link.
         local symlink_target="$(readlink --canonicalize-existing "$*")"
