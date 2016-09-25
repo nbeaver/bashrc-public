@@ -10,57 +10,6 @@ function free-mem-percent {
 # http://askubuntu.com/questions/278441/how-to-show-failed-ping
 alias ping-packet-loss='ping -i 1 -f 8.8.8.8'
 
-# Load the bug page for a given package.
-function bugpage {
-    # TODO: Make this a separate executable shell script.
-    # TODO: Handle multiple arguments.
-    # TODO: Make this portable to BSDs.
-    local DISTRO="$(lsb_release --short --id)"
-    if [ $# -gt 1 ]; then
-        echo "Error: received $# arguments instead of 1: $*"
-        return 1
-    elif [ $# -eq 0 ]; then
-        echo "Usage: enter package name:"
-        echo "    bugpage package-name"
-        echo "or bug number:"
-        echo "    bugpage 1234567"
-        echo "Your Linux distribution is $DISTRO"
-        return 1
-    fi
-    local DISTRO="$(lsb_release --short --id)"
-    if (( $1 > 0 )); then
-        # The argument is a positive integer, so it must be a bug number.
-        # TODO: use associative arrays instead of conditionals.
-        if [ "$DISTRO" = 'Debian' ]; then
-            xdg-open "https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=$1"
-        elif [ "$DISTRO" = 'Ubuntu' ]; then
-            xdg-open "https://bugs.launchpad.net/bugs/$1"
-        elif [ "$DISTRO" = 'Fedora' ]; then
-            xdg-open "https://bugzilla.redhat.com/show_bug.cgi?id=$1"
-        elif [ "$DISTRO" = 'Arch' ]; then
-            xdg-open "https://bugs.archlinux.org/task/$1"
-        else
-            echo "Unrecognized distro: $DISTRO"
-        fi
-    else
-        # If it's not a positive integer, maybe it's a package name.
-        if [ "$DISTRO" = 'Debian' ]; then
-            xdg-open "https://bugs.debian.org/cgi-bin/pkgreport.cgi?archive=both;pkg=$1"
-        elif [ "$DISTRO" = 'Ubuntu' ]; then
-            xdg-open "https://bugs.launchpad.net/ubuntu/+source/$1/+bugs"
-        elif [ "$DISTRO" = 'Fedora' ]; then
-            xdg-open "https://bugzilla.redhat.com/buglist.cgi?component=$1"
-        elif [ "$DISTRO" = 'Arch' ]; then
-            xdg-open "https://bugs.archlinux.org/index.php?string=$1&project=0"
-        else
-            echo "Unrecognized distro: $DISTRO"
-        fi
-    fi
-}
-# Autocomplete Debian package names.
-# Requires debian-goodies package.
-complete -F _pkg_names bugpage
-
 # Open Debian package page tracking page.
 function qa {
     for var in "$@"; do
