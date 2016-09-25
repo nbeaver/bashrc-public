@@ -125,17 +125,17 @@ edit_function() {
         # looks like this:
         # _filedir_xspec 1819 /usr/share/bash-completion/bash_completion
         # so we want the 2nd and 3rd fields.
-        line_number="$(declare -F $* | cut -d ' ' -f 2)"
-        function_file="$(declare -F $* | cut -d ' ' -f 3-)"
+        line_number="$(declare -F "$*" | cut -d ' ' -f 2)"
+        function_file="$(declare -F "$*" | cut -d ' ' -f 3-)"
         shopt -u extdebug
         unset CDPATH
         cd -- "$(dirname "$function_file")"
-        editor +$line_number "$function_file"
+        editor +"$line_number" "$function_file"
         # The command `editor +100 /path/to/file`
         # positions the cursor on line 100 of the file.
         # This works for emacs, vim, nano, joe, jed, and probably others too.
     else
-        printf "Error: \`$*\` is not a function.\n"
+        printf "Error: \`%s\` is not a function.\n" "$*"
         return 1
     fi
 }
@@ -166,7 +166,7 @@ edit_completion_function() {
     local function_name
     if complete -p "$*"
     then
-        function_name="$(get_completion_function_name $(complete -p $*))"
+        function_name="$(get_completion_function_name "$(complete -p "$*")")"
         edit_function "$function_name"
     fi
     # TODO: edit the dynamically loaded completions
@@ -298,7 +298,7 @@ lucky() {
             if [ -d "$path" ]; then
                 if try_pushd "$path"
                 then
-                    printf "match: ‘$(basename "$path")’\n"
+                    printf "match: \`%s\`\n" "$(basename "$path")"
                     return 0
                 else
                     continue
@@ -308,7 +308,7 @@ lucky() {
                 local parent="$(dirname "$path")"
                 if try_pushd "$parent"
                 then
-                    printf "match: ‘$(basename "$path")’\n"
+                    printf "match: \`%s\`\n" "$(basename "$path")"
                     return 0
                 else
                     continue
