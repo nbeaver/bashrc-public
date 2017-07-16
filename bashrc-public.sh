@@ -29,8 +29,8 @@ function date-subtract {
 function date-india() {
     local temp="$TZ"
     export TZ="Asia/Kolkata"
-    echo -n "$TZ : "
-    date +'%A, %B %e, %Y at %r'
+    printf "%s : " "$TZ"
+    date
         # e.g. Asia/Kolkata : Thursday, January 1, 1970 at 00:00:00 AM
     export TZ="$temp"
 }
