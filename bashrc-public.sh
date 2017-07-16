@@ -17,7 +17,6 @@ function qa {
         xdg-open "https://tracker.debian.org/pkg/$var"
     done
 }
-complete -F _pkg_names qa
 
 # Find the difference between two dates in days.
 # http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
