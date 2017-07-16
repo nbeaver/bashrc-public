@@ -34,6 +34,13 @@ function date-india() {
         # e.g. Asia/Kolkata : Thursday, January 1, 1970 at 00:00:00 AM
     export TZ="$temp"
 }
+function date-chicago() {
+    local temp="$TZ"
+    export TZ="America/Chicago"
+    printf "%s : " "$TZ"
+    date
+    export TZ="$temp"
+}
 
 # Not a real function, but similar to one I use.
 # This will copy any given files to a folder on a remote machine.
