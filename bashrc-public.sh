@@ -105,7 +105,7 @@ function followpath() {
 complete -c followpath
 
 # Move the the parent directory of a symlink.
-# Has to be a shell function, otherwise it could not use cd.
+# Has to be a shell function, otherwise it could not use cd / pushd.
 function follow() {
     unset CDPATH
     if test -L "$*"
@@ -114,7 +114,7 @@ function follow() {
         local symlink_target="$(readlink --canonicalize-existing "$*")"
         printf -- "$symlink_target\n"
         local target_directory="$(dirname "$symlink_target")"
-        cd -- "$target_directory"
+        pushd -- "$target_directory"
     else
         printf -- "Error: '$*'is not a symbolic link.\n"
         return 1
@@ -135,7 +135,7 @@ edit_function() {
         function_file="$(declare -F "$*" | cut -d ' ' -f 3-)"
         shopt -u extdebug
         unset CDPATH
-        cd -- "$(dirname "$function_file")"
+        pushd -- "$(dirname "$function_file")"
         editor +"$line_number" "$function_file"
         # The command `editor +100 /path/to/file`
         # positions the cursor on line 100 of the file.
