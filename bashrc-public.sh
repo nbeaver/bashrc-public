@@ -50,12 +50,6 @@ function to-remote-machine {
     rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
 }
 
-# Edit your bash configuration and then reload it right afterward.
-# http://www.reddit.com/r/linux/comments/1xcdtk/the_generally_helpful_bashrc_alias_thread/cfa4p21
-function config() {
-    $EDITOR ~/.bashrc && source ~/.bashrc
-}
-
 # Make gdb run with date-stamped logfiles,
 # and pass arguments properly.
 # https://forum.transmissionbt.com/viewtopic.php?f=1&t=14103#p62594
