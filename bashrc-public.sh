@@ -338,3 +338,9 @@ lucky() {
     fi
     return 1
 }
+
+# cd to parent directory of argument.
+cdd()
+{
+    cd "$(dirname "$*")"
+}
