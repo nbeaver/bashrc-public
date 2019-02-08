@@ -344,3 +344,19 @@ cdd()
 {
     cd "$(dirname "$*")"
 }
+
+
+# Handy function for combining tree(1) and less(1)
+# so that colors are preserved.
+tree-less() {
+    if test $# -lt 1
+    then
+        tree -C | less -R
+    else
+        # We have to quote "$*" to handle paths with spaces,
+        # but if we don't check number of arguments,
+        # the command will be: tree ""
+        # and give this error: [error opening dir]
+        tree -C "$*" | less -R
+    fi
+}
