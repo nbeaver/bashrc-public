@@ -75,23 +75,23 @@ function followpath() {
         pushd -- "$target_directory"
     elif [ "$command_type" == '' ]
     then
-        echo "Error: command not found: $*"
+        printf "Error: command not found: '%s'\n" "$*"
         return 1
     elif [ "$command_type" == 'builtin' -o "$command_type" == 'keyword' ]
     then
-        echo "Error: cannot follow '$*' since it is a $command_type"
-        echo "Try running this:"
-        echo "$ help $*"
+        printf "Error: cannot follow '%s' since it is a %s\n" "$*" "$command_type"
+        printf "Try running this:\n"
+        printf "$ help '%s'\n" "$*"
         return 2
     elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
     then
-        echo "Error: cannot follow '$*' since it is a $command_type"
-        echo "Try running this:"
-        echo "$ type $*"
+        printf "Error: cannot follow '%s' since it is a %s\n" "$*" "${command_type}"
+        printf "Try running this:\n"
+        printf "$ type %s\n" "$*"
         return 2
     else
         # Should not run, unless I've forgotten a command type.
-        echo "Error: '$*' has unknown command type $command_type"
+        printf "Error: '%s' has unknown command type '%s'\n" "$*" "${command_type}"
         return 3
     fi
 }
