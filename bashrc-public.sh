@@ -355,7 +355,15 @@ lucky() {
 # cd to parent directory of argument.
 cdd()
 {
-    cd "$(dirname "$*")"
+    local target
+    target=$(dirname "$*")
+    if ! cd "${target}"
+    then
+        printf "Error: could not change directory to parent of path '%s'\n" "$*"
+        return 1
+    else
+        return 0
+    fi
 }
 
 
