@@ -76,7 +76,7 @@ function followpath() {
         maybe_symlink="$(type -p "$*")"
         local target
         target="$(readlink --canonicalize-existing "$maybe_symlink")"
-        printf -- "$target\n"
+        printf -- "%s\n" "$target"
         local target_directory
         target_directory="$(dirname "$target")"
         pushd -- "$target_directory"
@@ -114,12 +114,12 @@ function follow() {
         # Check if the input is a symbolic link.
         local symlink_target
         symlink_target="$(readlink --canonicalize-existing "$*")"
-        printf -- "$symlink_target\n"
+        printf -- "%s\n" "$symlink_target"
         local target_directory
         target_directory="$(dirname "$symlink_target")"
         pushd -- "$target_directory"
     else
-        printf -- "Error: '$*'is not a symbolic link.\n"
+        printf -- "Error: '%s'is not a symbolic link.\n" "%*"
         return 1
     fi
 }
@@ -166,7 +166,7 @@ get_completion_function_name() {
     do
         if test "$flag" = 'F'
         then
-            printf -- "$OPTARG\n"
+            printf -- "%s\n" "$OPTARG"
         fi
     done
 }
