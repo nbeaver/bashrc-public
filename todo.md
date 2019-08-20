@@ -1,1 +1,5 @@
-- [ ] Fix ShellCheck linter warnings.
+- [x] Fix ShellCheck linter warnings.
+    - [x] [SC2155: Declare and assign separately to avoid masking return values.](https://github.com/koalaman/shellcheck/wiki/SC2155)
+    - [x] [SC2059: Don't use variables in the printf format string.](https://github.com/koalaman/shellcheck/wiki/SC2059)
+    - [x] [SC2166: Prefer `[ p ] || [ q ]` as `[ p -o q ]` is not well defined.](https://github.com/koalaman/shellcheck/wiki/SC2166)
+    - [x] [SC2162: read without -r will mangle backslashes.](https://github.com/koalaman/shellcheck/wiki/SC2162)
