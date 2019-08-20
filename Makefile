@@ -1,3 +1,3 @@
 .PHONY: shellcheck
 shellcheck :
-	shellcheck bashrc-public.sh
+	shellcheck --shell=bash bashrc-public.sh
