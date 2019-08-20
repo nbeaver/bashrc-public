@@ -262,7 +262,7 @@ lucky() {
         declare -a realdirs=()
         local dir
         local realdir
-        while read dir
+        while read -r dir
         do
             realdir="$(realpath -e -- "$dir")"
             realdirs+=("$realdir")
@@ -305,7 +305,7 @@ lucky() {
         # and usually does not need all the results,
         # but there does not seem to be an easy way around this.
         local parent
-        while read path
+        while read -r path
         do
             matches=$((matches+1))
             if [ -d "$path" ]; then
