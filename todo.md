@@ -1,0 +1,1 @@
+- [ ] Fix ShellCheck linter warnings.
