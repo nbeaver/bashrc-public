@@ -1,3 +1,5 @@
+#! /usr/bin/env bash
+
 # Like `free`, but with percentages instead of absolute amounts.
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free
 # http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free#comment34895569_10586020
