@@ -48,7 +48,8 @@ function date-chicago() {
 # This will copy any given files to a folder on a remote machine.
 # http://www.omnis-dev.com/cgi-bin/nextkey.omns?Key=20080118142922
 function to-remote-machine {
-    local resolved="$(readlink --canonicalize-existing "$@")"
+    local resolved
+    resolved="$(readlink --canonicalize-existing "$@")"
     rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
 }
 
@@ -66,14 +67,18 @@ function gdb-log() {
 # Has to be a shell function, otherwise it could not use pushd and popd.
 function followpath() {
     unset CDPATH
-    local command_type="$(type -t "$*")"
+    local command_type
+    command_type="$(type -t "$*")"
     # one of 'alias', 'keyword', 'function', 'builtin', 'file', or ''
     if [ "$command_type" == 'file' ]
     then
-        local maybe_symlink="$(type -p "$*")"
-        local target="$(readlink --canonicalize-existing "$maybe_symlink")"
+        local maybe_symlink
+        maybe_symlink="$(type -p "$*")"
+        local target
+        target="$(readlink --canonicalize-existing "$maybe_symlink")"
         printf -- "$target\n"
-        local target_directory="$(dirname "$target")"
+        local target_directory
+        target_directory="$(dirname "$target")"
         pushd -- "$target_directory"
     elif [ "$command_type" == '' ]
     then
@@ -107,9 +112,11 @@ function follow() {
     if test -L "$*"
     then
         # Check if the input is a symbolic link.
-        local symlink_target="$(readlink --canonicalize-existing "$*")"
+        local symlink_target
+        symlink_target="$(readlink --canonicalize-existing "$*")"
         printf -- "$symlink_target\n"
-        local target_directory="$(dirname "$symlink_target")"
+        local target_directory
+        target_directory="$(dirname "$symlink_target")"
         pushd -- "$target_directory"
     else
         printf -- "Error: '$*'is not a symbolic link.\n"
@@ -118,7 +125,8 @@ function follow() {
 }
 
 edit_function() {
-    local line_number function_file
+    local line_number
+    local function_file
     if declare -F "$*"
     then
         shopt -s extdebug
@@ -245,16 +253,18 @@ lucky() {
             err "path is not a directory: $path"
             return 1
         fi
-        local resolved="$(realpath -e -- "$path")"
+        local resolved
+        resolved="$(realpath -e -- "$path")"
         # We have to use dirs -l
         # instead of DIRSTACK
         # due to lack of tilde expansion.
         local realdirs
         declare -a realdirs=()
         local dir
+        local realdir
         while read dir
         do
-            local realdir="$(realpath -e -- "$dir")"
+            realdir="$(realpath -e -- "$dir")"
             realdirs+=("$realdir")
         done < <(dirs -l -p)
         if in_array "$resolved" realdirs
@@ -294,6 +304,7 @@ lucky() {
         # since it has to run a full 'locate' search,
         # and usually does not need all the results,
         # but there does not seem to be an easy way around this.
+        local parent
         while read path
         do
             matches=$((matches+1))
@@ -307,7 +318,7 @@ lucky() {
                 fi
 
             elif [ -f "$path" ]; then
-                local parent="$(dirname "$path")"
+                parent="$(dirname "$path")"
                 if try_pushd "$parent"
                 then
                     printf "match: \`%s\`\n" "$(basename "$path")"
