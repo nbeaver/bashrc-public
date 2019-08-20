@@ -84,13 +84,13 @@ function followpath() {
     then
         printf "Error: command not found: '%s'\n" "$*"
         return 1
-    elif [ "$command_type" == 'builtin' -o "$command_type" == 'keyword' ]
+    elif test "$command_type" = 'builtin' || test "$command_type" = 'keyword'
     then
         printf "Error: cannot follow '%s' since it is a %s\n" "$*" "$command_type"
         printf "Try running this:\n"
         printf "$ help '%s'\n" "$*"
         return 2
-    elif [ "$command_type" == 'alias' -o "$command_type" == 'function' ]
+    elif test "$command_type" = 'alias' || test "$command_type" = 'function'
     then
         printf "Error: cannot follow '%s' since it is a %s\n" "$*" "${command_type}"
         printf "Try running this:\n"
