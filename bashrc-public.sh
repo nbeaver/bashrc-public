@@ -119,7 +119,7 @@ function follow() {
         target_directory="$(dirname "$symlink_target")"
         pushd -- "$target_directory"
     else
-        printf -- "Error: '%s'is not a symbolic link.\n" "$*"
+        printf -- "Error: not a symbolic link: '%s'\n" "$*"
         return 1
     fi
 }
