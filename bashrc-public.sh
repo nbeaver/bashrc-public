@@ -357,7 +357,7 @@ cdd()
 {
     local target
     target=$(dirname "$*")
-    if ! cd "${target}"
+    if ! pushd "${target}"
     then
         printf "Error: could not change directory to parent of path '%s'\n" "$*"
         return 1
