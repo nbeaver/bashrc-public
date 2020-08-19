@@ -365,6 +365,7 @@ cdd()
         return 0
     fi
 }
+# https://unix.stackexchange.com/questions/604822/taking-a-file-argument-and-moving-to-that-directory
 
 
 # Handy function for combining tree(1) and less(1)
