@@ -1,30 +1,30 @@
 #! /usr/bin/env bash
 
-# Like `free`, but with percentages instead of absolute amounts.
-# http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free
-# http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free#comment34895569_10586020
-function free-mem-percent {
-    free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%\n"), $3/$2*100}'
-}
+# ------------------------------------------------------------------------------
+# Shell prompt customization.
+
+# Add $SHLVL to the prompt if it's greater than 1.
+# This way, exiting a shell is less surprising.
+if [ $SHLVL -gt 1 ]; then
+    PS1="$PS1""SHLVL=$SHLVL \$ "
+fi
+
+# ------------------------------------------------------------------------------
+# Aliases
 
 # Show if you're losing packets.
 # http://askubuntu.com/a/278469
 # http://askubuntu.com/questions/278441/how-to-show-failed-ping
 alias ping-packet-loss='ping -i 1 -f 8.8.8.8'
 
-# Open Debian package page tracking page.
-function qa {
-    for var in "$@"; do
-        #xdg-open "https://packages.qa.debian.org/$var"
-        xdg-open "https://tracker.debian.org/pkg/$var"
-    done
-}
+# ------------------------------------------------------------------------------
+# Functions without arguments.
 
-# Find the difference between two dates in days.
-# http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
-# http://stackoverflow.com/a/4679150
-function date-subtract {
-    echo $(( ( $(date -d "$1" +%s) - $(date -d "$2" +%s) ) /(24 * 60 * 60 ) )) ;
+# Like `free`, but with percentages instead of absolute amounts.
+# http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free
+# http://stackoverflow.com/questions/10585978/linux-command-for-percentage-of-memory-that-is-free#comment34895569_10586020
+function free-mem-percent {
+    free | awk '/Mem/{printf("used: %.2f%"), $3/$2*100} /buffers\/cache/{printf(", buffers: %.2f%"), $4/($3+$4)*100} /Swap/{printf(", swap: %.2f%\n"), $3/$2*100}'
 }
 
 # Find out the time and date without changing the locale.
@@ -44,21 +44,9 @@ function date-chicago() {
     export TZ="$temp"
 }
 
-# Not a real function, but similar to one I use.
-# This will copy any given files to a folder on a remote machine.
-# http://www.omnis-dev.com/cgi-bin/nextkey.omns?Key=20080118142922
-function to-remote-machine {
-    local resolved
-    resolved="$(readlink --canonicalize-existing "$@")"
-    rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
-}
 
-# Make gdb run with date-stamped logfiles,
-# and pass arguments properly.
-# https://forum.transmissionbt.com/viewtopic.php?f=1&t=14103#p62594
-function gdb-log() {
-    gdb -ex "set logging file $(date +%T)-gdb.txt" -ex 'handle SIGPIPE nostop noprint nopass' -ex 'set logging on' -ex 'run' --args "$@" ;
-}
+# ------------------------------------------------------------------------------
+# Functions with a single argument.
 
 # Follow a command to the directory it comes from,
 # or follows a symbolic link to the location of the file.
@@ -183,33 +171,6 @@ edit_completion_function() {
     # in /usr/share/bash-completion/completions/
 }
 complete -c edit_completion_function
-
-# Add $SHLVL to the prompt if it's greater than 1.
-# This way, exiting a shell is less surprising.
-if [ $SHLVL -gt 1 ]; then
-    PS1="$PS1""SHLVL=$SHLVL \$ "
-fi
-
-# http://redclay.altervista.org/wiki/doku.php?id=projects:old-projects
-function apt-history(){
-    case "$1" in
-        install)
-            tac /var/log/dpkg.log | grep 'install ' | less
-            ;;
-        upgrade|remove)
-            tac /var/log/dpkg.log | grep "$1" | less
-            ;;
-        rollback)
-            tac /var/log/dpkg.log | grep upgrade |
-            grep "$2" -A10000000 |
-            grep "$3" -B10000000 |
-            awk '{print $4"="$5}' | less
-            ;;
-        *)
-            tac /var/log/dpkg.log | less
-            ;;
-    esac
-}
 
 # Takes you to the first matching path using the locate(1) command.
 # Most useful if you know a globally unique filename or directory name.
@@ -367,6 +328,19 @@ cdd()
 }
 # https://unix.stackexchange.com/questions/604822/taking-a-file-argument-and-moving-to-that-directory
 
+# cd to realpath of argument.
+cdr()
+{
+    local target
+    target=$(realpath --canonicalize-existing "$*")
+    if ! pushd "${target}"
+    then
+        printf "Error: could not change directory to parent of path '%s'\n" "$*"
+        return 1
+    else
+        return 0
+    fi
+}
 
 # Handy function for combining tree(1) and less(1)
 # so that colors are preserved.
@@ -382,3 +356,58 @@ tree-less() {
         tree -C "$*" | less -R
     fi
 }
+# ------------------------------------------------------------------------------
+# Functions with multiple arguments.
+
+# Find the difference between two dates in days.
+# http://stackoverflow.com/questions/4679046/bash-relative-date-x-days-ago
+# http://stackoverflow.com/a/4679150
+function date-subtract {
+    echo $(( ( $(date -d "$1" +%s) - $(date -d "$2" +%s) ) /(24 * 60 * 60 ) )) ;
+}
+
+# Open Debian package page tracking page.
+function qa {
+    for var in "$@"; do
+        #xdg-open "https://packages.qa.debian.org/$var"
+        xdg-open "https://tracker.debian.org/pkg/$var"
+    done
+}
+
+# Not a real function, but similar to one I use.
+# This will copy any given files to a folder on a remote machine.
+# http://www.omnis-dev.com/cgi-bin/nextkey.omns?Key=20080118142922
+function to-remote-machine {
+    local resolved
+    resolved="$(readlink --canonicalize-existing "$@")"
+    rsync --verbose --progress --archive --compress --update "$resolved" user@remote-machine:~/remote-folder/
+}
+
+# Make gdb run with date-stamped logfiles,
+# and pass arguments properly.
+# https://forum.transmissionbt.com/viewtopic.php?f=1&t=14103#p62594
+function gdb-log() {
+    gdb -ex "set logging file $(date +%T)-gdb.txt" -ex 'handle SIGPIPE nostop noprint nopass' -ex 'set logging on' -ex 'run' --args "$@" ;
+}
+
+# http://redclay.altervista.org/wiki/doku.php?id=projects:old-projects
+function apt-history(){
+    case "$1" in
+        install)
+            tac /var/log/dpkg.log | grep 'install ' | less
+            ;;
+        upgrade|remove)
+            tac /var/log/dpkg.log | grep "$1" | less
+            ;;
+        rollback)
+            tac /var/log/dpkg.log | grep upgrade |
+            grep "$2" -A10000000 |
+            grep "$3" -B10000000 |
+            awk '{print $4"="$5}' | less
+            ;;
+        *)
+            tac /var/log/dpkg.log | less
+            ;;
+    esac
+}
+
